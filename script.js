@@ -1,209 +1,195 @@
-const uploadArea = document.getElementById('uploadArea');
-const imageInput = document.getElementById('imageInput');
-const imagePreview = document.getElementById('imagePreview');
-const previewImg = document.getElementById('previewImg');
-const removeBtn = document.getElementById('removeBtn');
-const classifyBtn = document.getElementById('classifyBtn');
-const btnText = document.getElementById('btnText');
-const spinner = document.getElementById('spinner');
-const resultsSection = document.getElementById('resultsSection');
-const topPrediction = document.getElementById('topPrediction');
-const allPredictions = document.getElementById('allPredictions');
-const errorMessage = document.getElementById('errorMessage');
-const breedsList = document.getElementById('breedsList');
-
-let selectedFile = null;
+// Traffic Flow Prediction Demo JavaScript
 
 document.addEventListener('DOMContentLoaded', function() {
-    setupEventListeners();
-    loadSupportedBreeds();
+    // Get DOM elements
+    const hourSlider = document.getElementById('hour-slider');
+    const currentHourDisplay = document.getElementById('current-hour');
+    const daySelect = document.getElementById('day-select');
+    const predictBtn = document.getElementById('predict-btn');
+    const trafficVolumeDisplay = document.getElementById('traffic-volume');
+    const resultSection = document.getElementById('result-section');
+
+    // Traffic patterns data (simplified model)
+    const trafficPatterns = {
+        // Hourly multipliers (0-23 hours)
+        hourlyMultipliers: [
+            0.3, 0.2, 0.15, 0.1, 0.15, 0.4, 0.8, 1.2, 1.5, 1.3, 1.1, 1.0,
+            1.1, 1.2, 1.3, 1.4, 1.6, 1.8, 1.5, 1.2, 0.9, 0.7, 0.5, 0.4
+        ],
+        // Day of week multipliers
+        dayMultipliers: {
+            monday: 1.0,
+            tuesday: 1.1,
+            wednesday: 1.15,
+            thursday: 1.2,
+            friday: 1.3,
+            saturday: 0.8,
+            sunday: 0.6
+        }
+    };
+
+    // Base traffic volume
+    const baseTrafficVolume = 150;
+
+    // Update hour display when slider changes
+    hourSlider.addEventListener('input', function() {
+        currentHourDisplay.textContent = this.value;
+        updateSliderTrack();
+    });
+
+    // Update slider track color based on position
+    function updateSliderTrack() {
+        const value = hourSlider.value;
+        const percentage = (value / 23) * 100;
+        hourSlider.style.background = `linear-gradient(to right, #dc3545 0%, #dc3545 ${percentage}%, #e9ecef ${percentage}%, #e9ecef 100%)`;
+    }
+
+    // Predict traffic function
+    function predictTraffic() {
+        const hour = parseInt(hourSlider.value);
+        const day = daySelect.value;
+
+        // Calculate predicted traffic volume
+        const hourMultiplier = trafficPatterns.hourlyMultipliers[hour];
+        const dayMultiplier = trafficPatterns.dayMultipliers[day];
+        
+        // Add some randomness to make it more realistic
+        const randomFactor = 0.8 + (Math.random() * 0.4); // Random between 0.8 and 1.2
+        
+        const predictedVolume = Math.round(
+            baseTrafficVolume * hourMultiplier * dayMultiplier * randomFactor
+        );
+
+        // Update the display with animation
+        animateVolumeChange(predictedVolume);
+    }
+
+    // Animate the volume change
+    function animateVolumeChange(newVolume) {
+        const currentVolume = parseInt(trafficVolumeDisplay.textContent);
+        const difference = newVolume - currentVolume;
+        const steps = 20;
+        const stepSize = difference / steps;
+        let currentStep = 0;
+
+        // Add loading state
+        predictBtn.textContent = 'Predicting...';
+        predictBtn.disabled = true;
+
+        const animationInterval = setInterval(() => {
+            currentStep++;
+            const displayVolume = Math.round(currentVolume + (stepSize * currentStep));
+            trafficVolumeDisplay.textContent = displayVolume;
+
+            if (currentStep >= steps) {
+                clearInterval(animationInterval);
+                trafficVolumeDisplay.textContent = newVolume;
+                
+                // Reset button
+                predictBtn.textContent = 'Predict Traffic';
+                predictBtn.disabled = false;
+
+                // Add success animation to result box
+                const resultBox = document.querySelector('.result-box');
+                resultBox.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    resultBox.style.transform = 'scale(1)';
+                }, 200);
+            }
+        }, 30);
+    }
+
+    // Predict button click handler
+    predictBtn.addEventListener('click', function() {
+        predictTraffic();
+    });
+
+    // Header button interactions
+    document.querySelector('.share-btn').addEventListener('click', function() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'Traffic Flow Prediction Demo',
+                text: 'Check out this traffic flow prediction demo!',
+                url: window.location.href
+            });
+        } else {
+            // Fallback for browsers that don't support Web Share API
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                alert('Link copied to clipboard!');
+            });
+        }
+    });
+
+    document.querySelector('.star-btn').addEventListener('click', function() {
+        this.style.color = this.style.color === 'gold' ? '#6c757d' : 'gold';
+    });
+
+    document.querySelector('.edit-btn').addEventListener('click', function() {
+        alert('Edit functionality would be implemented here');
+    });
+
+    document.querySelector('.github-btn').addEventListener('click', function() {
+        window.open('https://github.com', '_blank');
+    });
+
+    document.querySelector('.menu-btn').addEventListener('click', function() {
+        alert('Menu options would be displayed here');
+    });
+
+    // Manage app button
+    document.querySelector('.manage-app-btn').addEventListener('click', function() {
+        alert('App management interface would be displayed here');
+    });
+
+    // Initialize slider track
+    updateSliderTrack();
+
+    // Auto-predict on page load
+    setTimeout(() => {
+        predictTraffic();
+    }, 500);
+
+    // Add keyboard support
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter' && event.target !== predictBtn) {
+            predictTraffic();
+        }
+    });
+
+    // Add smooth transitions
+    const style = document.createElement('style');
+    style.textContent = `
+        .result-box {
+            transition: transform 0.2s ease, background-color 0.3s ease;
+        }
+        
+        .predict-btn {
+            transition: all 0.2s ease;
+        }
+        
+        .predict-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        #traffic-volume {
+            transition: color 0.3s ease;
+        }
+    `;
+    document.head.appendChild(style);
 });
 
-function setupEventListeners() {
-    uploadArea.addEventListener('click', () => imageInput.click());
-
-    const browseLink = document.querySelector('.browse-link');
-    if (browseLink) {
-        browseLink.addEventListener('click', (e) => {
-            e.stopPropagation();
-            imageInput.click();
-        });
-    }
-
-    imageInput.addEventListener('change', handleFileSelect);
-    uploadArea.addEventListener('dragover', handleDragOver);
-    uploadArea.addEventListener('dragleave', handleDragLeave);
-    uploadArea.addEventListener('drop', handleDrop);
-    removeBtn.addEventListener('click', removeImage);
-    classifyBtn.addEventListener('click', classifyImage);
+// Add some utility functions for enhanced functionality
+function formatTime(hour) {
+    const period = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+    return `${displayHour}:00 ${period}`;
 }
 
-function handleFileSelect(event) {
-    const file = event.target.files[0];
-    if (file) processFile(file);
+function getTrafficDescription(volume) {
+    if (volume < 100) return 'Light traffic';
+    if (volume < 200) return 'Moderate traffic';
+    if (volume < 300) return 'Heavy traffic';
+    return 'Very heavy traffic';
 }
 
-function handleDragOver(event) {
-    event.preventDefault();
-    uploadArea.classList.add('dragover');
-}
-
-function handleDragLeave(event) {
-    event.preventDefault();
-    uploadArea.classList.remove('dragover');
-}
-
-function handleDrop(event) {
-    event.preventDefault();
-    uploadArea.classList.remove('dragover');
-    const files = event.dataTransfer.files;
-    if (files.length > 0) processFile(files[0]);
-}
-
-function processFile(file) {
-    if (!file.type.startsWith('image/')) {
-        showError('Please select a valid image file (JPG, PNG, JPEG)');
-        return;
-    }
-
-    if (file.size > 10 * 1024 * 1024) {
-        showError('File size must be less than 10MB');
-        return;
-    }
-
-    selectedFile = file;
-    displayImagePreview(file);
-    hideError();
-}
-
-function displayImagePreview(file) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        previewImg.src = e.target.result;
-        imagePreview.style.display = 'block';
-        uploadArea.style.display = 'none';
-        classifyBtn.disabled = false;
-        hideResults();
-    };
-    reader.readAsDataURL(file);
-}
-
-function removeImage() {
-    selectedFile = null;
-    imagePreview.style.display = 'none';
-    uploadArea.style.display = 'block';
-    classifyBtn.disabled = true;
-    imageInput.value = '';
-    hideResults();
-    hideError();
-}
-
-async function classifyImage() {
-    if (!selectedFile) {
-        showError('Please select an image first');
-        return;
-    }
-
-    setLoadingState(true);
-    hideError();
-    hideResults();
-
-    try {
-        const formData = new FormData();
-        formData.append('image', selectedFile);
-
-        const response = await fetch('/api/predict', {
-            method: 'POST',
-            body: formData
-        });
-
-        const data = await response.json();
-
-        if (!response.ok || !data.success) {
-            throw new Error(data.error || 'Classification failed');
-        }
-
-        displayResults(data);
-    } catch (error) {
-        console.error('Classification error:', error);
-        showError(error.message || 'An error occurred during classification');
-    } finally {
-        setLoadingState(false);
-    }
-}
-
-function setLoadingState(loading) {
-    btnText.textContent = loading ? 'Classifying...' : 'Classify Breed';
-    spinner.style.display = loading ? 'block' : 'none';
-    classifyBtn.disabled = loading;
-}
-
-function displayResults(data) {
-    const { top_prediction, all_predictions } = data;
-
-    topPrediction.innerHTML = `
-        <h3>${top_prediction.breed}</h3>
-        <p>Confidence: ${formatConfidence(top_prediction.confidence)}</p>
-        <div class="confidence-bar">
-            <div class="confidence-fill" style="width: ${top_prediction.confidence * 100}%"></div>
-        </div>
-    `;
-
-    allPredictions.innerHTML = all_predictions.map(pred => `
-        <div class="prediction-item">
-            <span class="prediction-name">${pred.breed}</span>
-            <span class="prediction-confidence">${formatConfidence(pred.confidence)}</span>
-        </div>
-    `).join('');
-
-    resultsSection.style.display = 'block';
-}
-
-function hideResults() {
-    resultsSection.style.display = 'none';
-}
-
-function showError(message) {
-    errorMessage.textContent = message;
-    errorMessage.style.display = 'block';
-}
-
-function hideError() {
-    errorMessage.style.display = 'none';
-}
-
-async function loadSupportedBreeds() {
-    try {
-        const response = await fetch('/api/breeds');
-        const data = await response.json();
-
-        if (data.breeds) {
-            breedsList.innerHTML = data.breeds.map(breed =>
-                `<span class="breed-tag">${breed}</span>`
-            ).join('');
-        }
-    } catch (error) {
-        console.error('Error loading breeds:', error);
-        const fallbackBreeds = ['Mehsana', 'Murrah', 'Surti', 'Rathi', 'Sahiwal', 'Red_Sindhi', 'Tharparkar'];
-        breedsList.innerHTML = fallbackBreeds.map(breed =>
-            `<span class="breed-tag">${breed}</span>`
-        ).join('');
-    }
-}
-
-function formatConfidence(confidence) {
-    return `${(confidence * 100).toFixed(1)}%`;
-}
-
-function validateImageFile(file) {
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-    return validTypes.includes(file.type);
-}
-
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        processFile,
-        validateImageFile,
-        formatConfidence
-    };
-}

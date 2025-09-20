@@ -1,139 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Indian Cattle & Buffalo Breed Classifier</title>
-  <link rel="stylesheet" href="style.css">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Flow Prediction Demo</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="navbar">
-    <div class="logo">Wagmi</div>
-    <nav>
-      <!-- Buttons -->
-      <button class="btn login" id="loginBtn">Log in</button>
-      <button class="btn primary" id="registerBtn">Register</button>
+    <div class="container">
+        <header>
+            <div class="header-actions">
+                <button class="share-btn">Share</button>
+                <button class="star-btn">⭐</button>
+                <button class="edit-btn">✏️</button>
+                <button class="github-btn">🐙</button>
+                <button class="menu-btn">⋮</button>
+            </div>
+        </header>
 
-      <!-- Login Form -->
-      <div class="login-form" id="loginForm">
-        <h2>Login</h2>
-        <form id="loginDataForm">
-          <input type="text" name="identifier" placeholder="Email or Mobile" required>
-          <input type="password" name="password" placeholder="Password" required>
-          <button type="submit" class="btn primary" style="display:block;margin:15px auto;">Log in</button>
+        <main class="main-content">
+            <h1 class="title">Traffic Flow Prediction Demo</h1>
+            <p class="description">Predicting traffic volume for a given time and day.</p>
 
-        </form>
-        <p style="text-align:center; margin-top: 10px;">
-          Don't have an account?  
-          <span class="click-here" id="switchToRegister" style="color: #2762a5; cursor:pointer;">Register</span>
-        </p>
-      </div>
+            <div class="input-section">
+                <div class="hour-section">
+                    <label for="hour-slider" class="input-label">Hour of Day</label>
+                    <div class="slider-container">
+                        <input type="range" id="hour-slider" class="hour-slider" min="0" max="23" value="17">
+                        <div class="slider-labels">
+                            <span>0</span>
+                            <span id="current-hour">17</span>
+                            <span>23</span>
+                        </div>
+                    </div>
+                </div>
 
-      <!-- Register Form -->
-      <div class="login-form" id="registerForm">
-        <h2>Register</h2>
-        <!-- Updated form to send data to save.php -->
-        <form id="registerDataForm" action="save.php" method="post">
-          <input type="text" name="name" placeholder="Full Name" required>
-          <input type="tel" name="mobile" placeholder="Mobile Number" required>
-          <input type="email" name="email" placeholder="Email ID" required>
-          <input type="password" name="password" placeholder="Password" required>
-          <button type="submit" class="btn primary" style="display:block;margin:15px auto;">Register</button>
-        </form>
-        <p style="text-align:center; margin-top: 10px;">
-          Already have an account? 
-          <span class="click-here" id="switchToLogin" style="color: #2762a5; cursor:pointer;">Login</span>
-        </p>
-      </div>
-    </nav>
-  </header>
+                <div class="day-section">
+                    <label for="day-select" class="input-label">Day of Week</label>
+                    <select id="day-select" class="day-select">
+                        <option value="monday" selected>Monday</option>
+                        <option value="tuesday">Tuesday</option>
+                        <option value="wednesday">Wednesday</option>
+                        <option value="thursday">Thursday</option>
+                        <option value="friday">Friday</option>
+                        <option value="saturday">Saturday</option>
+                        <option value="sunday">Sunday</option>
+                    </select>
+                </div>
 
-  <main>
-    <!-- Hero Section -->
-    <div class="hero">
-      <div class="hero-text">
-        <h1>Identify cattle & buffalo breeds using AI</h1>
-        <p>
-          Below is a free classifier to identify Indian cattle and buffalo breeds. 
-          Just upload your image, and our AI will predict which breed it is – in just seconds.
-        </p>
-      </div>
-      <div class="hero-image">
-        <img src="cattle.jpg" alt="Cattle and Buffalo">
-      </div>
+                <button id="predict-btn" class="predict-btn">Predict Traffic</button>
+            </div>
+
+            <div id="result-section" class="result-section">
+                <div class="result-box">
+                    <span class="result-text">Predicted Traffic Volume: <span id="traffic-volume">207</span> vehicles</span>
+                </div>
+            </div>
+
+            <p class="disclaimer">This is a simplified demo. Actual model performance may vary.</p>
+        </main>
+
+        <footer class="footer">
+            <button class="manage-app-btn">
+                <span class="arrow-left">‹</span>
+                Manage app
+            </button>
+        </footer>
     </div>
 
-    <!-- Upload Section -->
-    <div class="upload-box">
-      <p>📤 Drop image or click to select<br> JPG, PNG, BMP, or WEBP</p>
-      <input type="file" id="imageInput" accept="image/*" hidden>
-      <div class="powered">Powered by <a href="#">Wagmi</a></div>
-    </div>
-  </main>
-
-  <!-- Footer Section -->
-  <footer>
-    <p>Contact No: <strong>9693411884</strong></p>
-    <div class="social-icons">
-      <a href="https://wa.me/+919693411884" target="_blank"><i class="fab fa-whatsapp"></i></a>
-      <a href="https://instagram.com/" target="_blank"><i class="fab fa-instagram"></i></a>
-    </div>
-  </footer>
-
-  <script>
-    const loginForm = document.getElementById("loginForm");
-    const registerForm = document.getElementById("registerForm");
-    const loginBtn = document.getElementById("loginBtn");
-    const registerBtn = document.getElementById("registerBtn");
-    const switchToRegister = document.getElementById("switchToRegister");
-    const switchToLogin = document.getElementById("switchToLogin");
-
-    // Toggle Login Form
-    function toggleLoginForm() {
-      loginForm.style.display = loginForm.style.display === "block" ? "none" : "block";
-      registerForm.style.display = "none";
-    }
-
-    // Toggle Register Form
-    function toggleRegisterForm() {
-      registerForm.style.display = registerForm.style.display === "block" ? "none" : "block";
-      loginForm.style.display = "none";
-    }
-
-    // Buttons
-    loginBtn.addEventListener("click", toggleLoginForm);
-    registerBtn.addEventListener("click", toggleRegisterForm);
-    switchToRegister.addEventListener("click", toggleRegisterForm);
-    switchToLogin.addEventListener("click", toggleLoginForm);
-
-    // Close forms when clicking outside
-    document.addEventListener("click", function(event) {
-      const target = event.target;
-      if (!loginForm.contains(target) && !registerForm.contains(target) && target !== loginBtn && target !== registerBtn && target !== switchToLogin && target !== switchToRegister) {
-        loginForm.style.display = "none";
-        registerForm.style.display = "none";
-      }
-    });
-
-    // Login Form Submission (localStorage demo, can be replaced with backend validation)
-    const loginFormElement = document.getElementById("loginDataForm");
-    loginFormElement.addEventListener("submit", function(e) {
-      e.preventDefault();
-      const enteredIdentifier = this.identifier.value;
-      const enteredPassword = this.password.value;
-      const savedUser = JSON.parse(localStorage.getItem("userData"));
-
-      if (savedUser && 
-         (enteredIdentifier === savedUser.email || enteredIdentifier === savedUser.mobile) && 
-         enteredPassword === savedUser.password) {
-        alert(`Welcome back, ${savedUser.name}!`);
-        this.reset();
-        loginForm.style.display = "none";
-      } else {
-        alert("Account not found, please register");
-      }
-    });
-  </script>
+    <script src="script.js"></script>
 </body>
 </html>
+
