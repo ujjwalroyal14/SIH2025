@@ -1,13 +1,25 @@
+<<<<<<< HEAD
+import React, { useState, useEffect } from "react";
+import Header from "./Operations/Header";
+import Footer from "./Operations/Footer";
+import LoginForm from "./Sections/LoginForm";
+import RegisterForm from "./Sections/RegisterForm";
+=======
 import React, { useState, useEffect, useRef } from "react";
 import Header from "./Operations/Header";
 import Footer from "./Operations/Footer";
+>>>>>>> ujjwal/main
 
 export default function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
+<<<<<<< HEAD
+  const [currentUser, setCurrentUser] = useState(null);
+=======
 
   const loginFormRef = useRef(null);
   const registerFormRef = useRef(null);
+>>>>>>> ujjwal/main
 
   const toggleLoginForm = () => {
     setShowLogin(!showLogin);
@@ -19,6 +31,122 @@ export default function App() {
     setShowLogin(false);
   };
 
+<<<<<<< HEAD
+  const fetchCurrentUser = async () => {
+    const token = sessionStorage.getItem("access_token");
+    if (!token) {
+      setCurrentUser(null);
+      return;
+    }
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/current_user/`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error("Not logged in");
+      const data = await response.json();
+      setCurrentUser(data);
+    } catch (err) {
+      setCurrentUser(null);
+      console.log("User not logged in");
+    }
+  };
+
+  useEffect(() => {
+    fetchCurrentUser();
+  }, []);
+
+  // Handle login
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const identifier = form.identifier.value.trim();
+    const password = form.password.value.trim();
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/login/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: identifier, password }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Login failed");
+
+      sessionStorage.setItem("access_token", data.access);
+
+      alert(`🎉 Welcome back, ${data.username || data.email}!`);
+      form.reset();
+      setShowLogin(false);
+      fetchCurrentUser(); 
+    } catch (err) {
+      alert(err.message || "Login failed");
+    }
+  };
+
+
+  const handleLogout = async () => {
+  const refreshToken = sessionStorage.getItem("refresh_token"); 
+  if (!refreshToken) {
+    alert("Yoy are Logged out successfully!✅😊");
+    setCurrentUser(null);
+    return;
+  }
+
+  try {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/logout/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refresh: refreshToken }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Logout failed");
+
+    sessionStorage.removeItem("access_token");
+    sessionStorage.removeItem("refresh_token");
+    setCurrentUser(null);
+    alert("✅😊 Logged out successfully!");
+  } catch (err) {
+    console.error(err);
+    alert("❌ Logout failed: " + err.message);
+  }
+};
+
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    const form = e.target;
+
+    const userData = {
+      username: form.username.value.trim(),
+      email: form.email.value.trim(),
+      password: form.password.value.trim(),
+    };
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/register/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Registration failed");
+
+      alert("✅ Registration successful! You can now log in.");
+      form.reset();
+      setShowRegister(false);
+      setShowLogin(true);
+    } catch (err) {
+      alert(err.message || "Registration failed");
+    }
+=======
   useEffect(() => {
     function handleClickOutside(event) {
       if (
@@ -71,17 +199,45 @@ export default function App() {
     alert("Registration successful! You can now log in.");
     form.reset();
     setShowRegister(false);
+>>>>>>> ujjwal/main
   };
 
   return (
     <div className="min-h-screen flex flex-col relative font-sans">
+<<<<<<< HEAD
+      {/* Background */}
+=======
       {/* ..........Background Image Portion....... */}
+>>>>>>> ujjwal/main
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
         style={{ backgroundImage: "url('/BackgroundImage.gif')" }}
       ></div>
       <div className="absolute inset-0 bg-black/30 z-0"></div>
 
+<<<<<<< HEAD
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <Header
+          toggleLoginForm={toggleLoginForm}
+          currentUser={currentUser}
+          handleLogout={handleLogout}
+        />
+
+        {showLogin && (
+          <LoginForm
+            onClose={() => setShowLogin(false)}
+            onSwitch={toggleRegisterForm}
+            handleLogin={handleLogin}
+          />
+        )}
+        {showRegister && (
+          <RegisterForm
+            onClose={() => setShowRegister(false)}
+            handleRegister={handleRegister}
+          />
+        )}
+
+=======
     
       <div className="relative z-10 flex flex-col min-h-screen">
       
@@ -215,6 +371,7 @@ export default function App() {
         )}
 
   
+>>>>>>> ujjwal/main
         <main className="flex-1 px-6 py-16 md:px-20">
           <div className="flex flex-col md:flex-row items-center justify-between gap-12">
             <div className="md:w-1/2 space-y-6">
