@@ -149,7 +149,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  
     "http://10.2.0.2:5173",
     "http://192.168.1.103:5173",
-    "https://sih-2025-azure.vercel.app",
+    "https://smart-indiahackathon2025.vercel.app",
 ]
 CORS_ALLOW_HEADERS = ['*']
 
@@ -168,7 +168,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",  
     "http://10.2.0.2:5173",
     "http://192.168.1.103:5173",
-    "https://sih-2025-azure.vercel.app",
+    "https://smart-indiahackathon2025.vercel.app",
 ]
 
 CORS_ALLOW_METHODS = [
